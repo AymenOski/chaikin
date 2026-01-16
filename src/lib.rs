@@ -75,3 +75,25 @@ fn chaikin_step(points: &[Pt], closed: bool) -> Vec<Pt> {
 
     out
 }
+
+fn precompute_iterations(base: &[Pt], max_steps: usize, mut closed: bool) -> Vec<Vec<Pt>> {
+    if base.len() >= 3 && dist2(base[0], *base.last().unwrap()) <= CLICK_RADIUS * CLICK_RADIUS {
+        closed = true;
+    }
+
+    let mut cur = if closed && base.len() >= 2 && dist2(base[0], *base.last().unwrap()) <= CLICK_RADIUS * CLICK_RADIUS {
+        base[..base.len() - 1].to_vec()
+    } else {
+        base.to_vec()
+    };
+
+    let mut iters = Vec::with_capacity(max_steps + 1);
+    iters.push(cur.clone());
+
+    for _ in 0..max_steps {
+        cur = chaikin_step(&cur, closed);
+        iters.push(cur.clone());
+    }
+
+    iters
+}

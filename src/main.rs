@@ -1,21 +1,16 @@
-use chaikin::*;
-fn main() {
-    let polygon = vec![
-        Point { x: 0.0, y: 0.0 },
-        Point { x: 4.0, y: 0.0 },
-        Point { x: 4.0, y: 4.0 },
-        Point { x: 0.0, y: 4.0 },
-    ];
+use macroquad::prelude::*;
 
-    println!("Original points:");
-    for p in &polygon {
-        println!("{:?}", p);
-    }
+#[macroquad::main("Chaikin's Corner Cutting Algorithm")]
+async fn main() {
 
-    let smooth = chaikin_algo(&polygon);
+    loop {
+        clear_background(BLACK);
 
-    println!("\nAfter Chaikin algorithm:");
-    for p in &smooth {
-        println!("{:?}", p);
+        // Exit
+        if is_key_pressed(KeyCode::Escape) {
+            break;
+        }
+
+        next_frame().await;
     }
 }

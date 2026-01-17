@@ -65,7 +65,7 @@ async fn main() {
         }
 
         for &p in &control_points {
-            draw_circle(p.x as f32, p.y as f32, 5.0, GREEN);
+            draw_circle(p.x as f32, p.y as f32, 5.0, WHITE);
         }
 
         next_frame().await;

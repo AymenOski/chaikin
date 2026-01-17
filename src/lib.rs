@@ -81,7 +81,10 @@ fn precompute_iterations(base: &[Pt], max_steps: usize, mut closed: bool) -> Vec
         closed = true;
     }
 
-    let mut cur = if closed && base.len() >= 2 && dist2(base[0], *base.last().unwrap()) <= CLICK_RADIUS * CLICK_RADIUS {
+    let mut cur = if closed
+        && base.len() >= 2
+        && dist2(base[0], *base.last().unwrap()) <= CLICK_RADIUS * CLICK_RADIUS
+    {
         base[..base.len() - 1].to_vec()
     } else {
         base.to_vec()
@@ -96,4 +99,123 @@ fn precompute_iterations(base: &[Pt], max_steps: usize, mut closed: bool) -> Vec
     }
 
     iters
+}
+
+pub struct App {
+    control_points: Vec<Pt>,
+    cached_iters: Vec<Vec<Pt>>,
+    dragging: Option<usize>,
+    last_mouse_pos: Vector2<f32>,
+    anim_running: bool,
+    anim_step: usize,
+    last_anim_instant: Instant,
+    closed: bool,
+}
+
+impl App {
+    pub fn new() -> Self {
+        let control_points = Vec::new();
+        Self {
+            cached_iters: precompute_iterations(&control_points, MAX_STEPS, false),
+            control_points,
+            dragging: None,
+            last_mouse_pos: Vector2::new(0.0, 0.0),
+            anim_running: false,
+            anim_step: 0,
+            last_anim_instant: Instant::now(),
+            closed: false,
+        }
+    }
+
+    fn mouse_pos_to_pt(pos: Vector2<f32>) -> Pt {
+        Pt {
+            x: pos.x.clamp(0.0, WIDTH),
+            y: pos.y.clamp(0.0, HEIGHT),
+        }
+    }
+
+    fn find_point_index_near(&self, pt: Pt, radius: f32) -> Option<usize> {
+        let r2 = radius * radius;
+        self.control_points.iter().position(|p| dist2(*p, pt) <= r2)
+    }
+
+    fn recompute_cache(&mut self) {
+        self.cached_iters = precompute_iterations(&self.control_points, MAX_STEPS, false);
+        if self.anim_step >= self.cached_iters.len() {
+            self.anim_step = 0;
+        }
+    }
+
+    fn draw_line(&self, graphics: &mut Graphics2D, a: Pt, b: Pt, thickness: f32, highlight: bool) {
+        if self.anim_running {
+            let color = if highlight {
+                Color::GREEN
+            } else {
+                Color::from_rgb(0.07, 0.07, 0.07)
+            };
+
+            let a: Vector2<f32> = a.into();
+            let b: Vector2<f32> = b.into();
+            graphics.draw_line(a, b, thickness, color);
+        }
+    }
+}
+
+impl WindowHandler for App {
+    fn on_draw(&mut self, helper: &mut WindowHelper, graphics: &mut Graphics2D) {
+        if self.anim_running
+            && self.control_points.len() >= 3
+            && self.last_anim_instant.elapsed() >= ANIM_INTERVAL
+        {
+            self.last_anim_instant = Instant::now();
+            self.anim_step = (self.anim_step + 1) % (MAX_STEPS + 1);
+        } else if !self.anim_running {
+            self.anim_step = 0;
+        }
+
+        let to_draw = if self.control_points.len() >= 3 {
+            &self.cached_iters[self.anim_step]
+        } else {
+            &self.control_points
+        };
+
+        graphics.clear_screen(Color::from_rgb(0.07, 0.07, 0.07));
+
+        let closed_detected = self.control_points.len() >= 3
+            && dist2(self.control_points[0], *self.control_points.last().unwrap())
+                <= CLICK_RADIUS * CLICK_RADIUS;
+
+        if self.control_points.len() >= 3 {
+            let iter = self.control_points.windows(2);
+            for w in iter {
+                self.draw_line(graphics, w[0], w[1], 1.0, false);
+            }
+            if closed_detected {
+                self.draw_line(
+                    graphics,
+                    *self.control_points.last().unwrap(),
+                    self.control_points[0],
+                    1.0,
+                    false,
+                );
+            }
+        }
+
+        if to_draw.len() >= 2 {
+            for w in to_draw.windows(2) {
+                self.draw_line(graphics, w[0], w[1], 1.0, true);
+            }
+            if closed_detected {
+                self.draw_line(graphics, *to_draw.last().unwrap(), to_draw[0], 2.0, true);
+            }
+        }
+
+        for p in &self.control_points {
+            let center: Vector2<f32> = (*p).into();
+            graphics.draw_circle(center, POINT_OUTER_R, Color::RED);
+            graphics.draw_circle(center, POINT_INNER_R, Color::from_rgb(0.12, 0.12, 0.12));
+        }
+
+        helper.request_redraw();
+    }
 }

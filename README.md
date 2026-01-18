@@ -2,6 +2,23 @@
 
 An interactive visualization of Chaikin's corner cutting algorithm - a simple yet elegant method for creating smooth curves from straight line segments.
 
+## Showcase
+
+### Initial State
+![Initial State](initial-state.png)
+
+### Final State (Animated)
+![Final State](final-state.png)
+
+## How It Works
+
+1. Click on the canvas to create control points (minimum 2 required)
+2. Press Enter to start the animation
+3. Watch as the algorithm applies Chaikin's corner cutting iteratively
+4. The visualization shows all 7 iterations cycling smoothly
+5. Press C to clear and draw a new shape
+
+
 ## Installation
 
 ### 1. Install Rust (Rootless Rustup)
@@ -19,11 +36,3 @@ Dependencies like `macroquad` are already in `Cargo.toml`, they'll install autom
 ```bash
 cargo r
 ```
-
-## How It Works
-
-1. Click on the canvas to create control points (minimum 2 required)
-2. Press Enter to start the animation
-3. Watch as the algorithm applies Chaikin's corner cutting iteratively
-4. The visualization shows all 7 iterations cycling smoothly
-5. Press C to clear and draw a new shape

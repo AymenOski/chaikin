@@ -39,7 +39,7 @@ async fn main() {
         }
 
         if is_key_pressed(KeyCode::Enter) {
-            if control_points.len() >= 3 {
+            if control_points.len() >= 2 {
                 animation_started = true;
                 chaikin_steps.clear();
 
@@ -92,7 +92,7 @@ async fn main() {
         if let Some(start_time) = warning_time {
             if get_time() - start_time < warning_duration {
                 draw_text(
-                    &format!("Need at least 3 points! (have {})", control_points.len()),
+                    &format!("Need at least 2 points! (have {})", control_points.len()),
                     10.0,
                     screen_height() - 30.0,
                     30.0,

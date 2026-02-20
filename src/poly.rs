@@ -1,5 +1,4 @@
 #[derive(Debug, Clone)]
-// after this we are going to allow dead code and any unused warnings or constructs
 #[allow(dead_code)]
 #[allow(unused)]
 
@@ -11,13 +10,13 @@ pub enum Poly {
 
 #[derive(Debug, Clone)]
 pub struct Point {
-    pub x: i32,
-    pub y: i32,
+    pub x: f64,
+    pub y: f64,
     pub kind: Poly,
 }
 
 impl Point {
-    pub fn new(x: i32, y: i32, kind: Poly) -> Self {
+    pub fn new(x: f64, y: f64, kind: Poly) -> Self {
         Self {
             x: x,
             y: y,
@@ -63,7 +62,7 @@ impl Polygone {
         self.end += 1;
     }
 
-    pub fn append_xy_kind(&mut self, x: i32, y: i32, kind: Poly) {
+    pub fn append_xy_kind(&mut self, x: f64, y: f64, kind: Poly) {
         self.polygone.push(Point {
             x: x,
             y: y,

@@ -20,6 +20,12 @@ impl Point {
             kind: kind,
         }
     }
+
+    pub fn get_distance(&self, p: Point) -> f64 {
+        let dx = (p.x - self.x).pow(2) as f64;
+        let dy = (p.y - self.y).pow(2) as f64;
+        dx.hypot(dy)
+    }
 }
 
 #[derive(Debug)]
@@ -36,7 +42,7 @@ impl Polygone {
             polygone: vec![p],
             start: 0,
             end: 0,
-            len:1,
+            len: 1,
         }
     }
 
@@ -48,15 +54,10 @@ impl Polygone {
         &mut self.polygone[self.end]
     }
 
-    pub fn appendPoint(&mut self, p: Point) {
-        self.polygone.push(p);
-        self.end += 1;
-    }
-
     pub fn append_point(&mut self, p: Point) {
         self.polygone.push(p);
         self.end += 1;
-        self.end += 1;
+        self.len += 1;
     }
 
     pub fn append_xy_kind(&mut self, x: i32, y: i32, kind: Poly) {
@@ -66,6 +67,25 @@ impl Polygone {
             kind: kind,
         });
         self.end += 1;
+        self.len += 1;
+    }
+
+    pub fn insert_point(&mut self, position: usize, p: Point) {
+        self.polygone.insert(position, p);
         self.end += 1;
+        self.len += 1;
+    }
+
+    pub fn insert_xy_kind(&mut self, position: usize, x: i32, y: i32, kind: Poly) {
+        self.polygone.insert(
+            position,
+            Point {
+                x: x,
+                y: y,
+                kind: kind,
+            },
+        );
+        self.end += 1;
+        self.len += 1;
     }
 }

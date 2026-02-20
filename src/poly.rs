@@ -1,4 +1,8 @@
 #[derive(Debug, Clone)]
+// after this we are going to allow dead code and any unused warnings or constructs
+#[allow(dead_code)]
+#[allow(unused)]
+
 pub enum Poly {
     P,
     Q,

@@ -42,6 +42,11 @@ pub struct Polygone {
 }
 
 impl Polygone {
+    // Linear interpolation helper: a + (b - a) * t
+    fn lerp(a: f64, b: f64, t: f64) -> f64 {
+        a + (b - a) * t
+    }
+
     pub fn create(p: Point) -> Self {
         Self {
             polygone: vec![p],
@@ -101,21 +106,23 @@ impl Polygone {
         if self.len < 3 {
             return;
         }
+
         for depth in 0..7 {
             self.print();
             let mut i = 0;
             while i < self.polygone.len() - 1 {
-                // println!("{:?}", self.polygone[i]);
+                // Find all points created at THIS depth level
                 if self.polygone[i].step != depth {
                     i += 1;
                     continue;
                 }
-                let qx = (self.polygone[i].x + self.polygone[i + 1].x) / 4.0;
-                let qy = (self.polygone[i].y + self.polygone[i + 1].y) / 4.0;
+                // Create Q and R by cutting edges starting from these points
+                let qx = Self::lerp(self.polygone[i].x, self.polygone[i + 1].x, 0.25);
+                let qy = Self::lerp(self.polygone[i].y, self.polygone[i + 1].y, 0.25);
                 let q = Point::new(qx, qy, Poly::Q, depth+1);
 
-                let rx = (self.polygone[i].x + self.polygone[i + 1].x) * 3.0 / 4.0;
-                let ry = (self.polygone[i].y + self.polygone[i + 1].y) * 3.0 / 4.0;
+                let rx = Self::lerp(self.polygone[i].x, self.polygone[i + 1].x, 0.75);
+                let ry = Self::lerp(self.polygone[i].y, self.polygone[i + 1].y, 0.75);
                 let r = Point::new(rx, ry, Poly::R, depth+1);
 
                 self.insert_point(i + 1, r);

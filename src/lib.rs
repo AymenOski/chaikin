@@ -3,10 +3,9 @@ mod poly;
 // use macroquad::prelude::*;
 use poly::{Point, Poly, Polygone};
 
-// write the main code in the func run() to use the lib crate instead of the binary crate idomatic rust XD
 pub fn run() {
-    let p1 = Point::new(1.0, 1.0, Poly::P, 0);
-    let p2 = Point::new(4.0, 4.0, Poly::P, 0);
+    let p1 = Point::new(2.0, 2.0, Poly::P, 0);
+    let p2 = Point::new(6.0, 6.0, Poly::P, 0);
     let p3 = Point::new(8.0, 0.0, Poly::P, 0);
 
     // println!("{}", p1.get_distance(p2.clone()));

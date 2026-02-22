@@ -47,13 +47,29 @@ impl Polygone {
         a + (b - a) * t
     }
 
-    pub fn create(p: Point) -> Self {
+    pub fn new(p: Point) -> Self {
         Self {
             polygone: vec![p],
             start: 0,
             end: 0,
             len: 1,
         }
+    }
+
+    pub fn empty() -> Self {
+        Self {
+            polygone: vec![],
+            start: 0,
+            end: 0,
+            len: 0,
+        }
+    }
+
+    pub fn delete(&mut self) {
+        self.polygone.clear();
+        self.start = 0;
+        self.end = 0;
+        self.len = 0;
     }
 
     pub fn start(&mut self) -> &mut Point {
@@ -101,14 +117,12 @@ impl Polygone {
         self.len += 1;
     }
 
-    // p -> p -> p
     pub fn cut_corners(&mut self) {
         if self.len < 3 {
             return;
         }
 
         for depth in 0..7 {
-            self.print();
             let mut i = 0;
             while i < self.polygone.len() - 1 {
                 // Find all points created at THIS depth level
@@ -130,24 +144,6 @@ impl Polygone {
 
                 i += 1;
             }
-            println!();
-        }
-    }
-
-    pub fn print(&self) {
-        for i in 0..self.len {
-            print!(
-                " {},{} ",
-                self.polygone[i].x,
-                self.polygone[i].y
-            );
-            print!(
-                "{:?}{} x:{}, y:{} -> ",
-                self.polygone[i].kind,
-                self.polygone[i].step,
-                self.polygone[i].x,
-                self.polygone[i].y
-            );
         }
     }
 }

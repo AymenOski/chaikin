@@ -49,7 +49,6 @@ pub async fn run() {
         // Advance animation step on timer
         if animation_started {
             let now = get_time();
-            println!("Now: {}, Last Step Time: {}, Step Duration: {}", now, last_step_time, step_duration);
             if now - last_step_time >= step_duration {
                 animation_step += 1;
                 if animation_step > 7 {

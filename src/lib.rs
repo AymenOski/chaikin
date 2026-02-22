@@ -5,6 +5,7 @@ use poly::{Point, Poly, Polygone};
 
 pub async fn run() {
     let mut control_points = Polygone::empty();
+    let mut control_points_backup = Polygone::empty();
     let mut animation_started = false;
     let mut animation_step: u8 = 0;
     let mut last_step_time: f64 = 0.0;
@@ -21,12 +22,14 @@ pub async fn run() {
         // Clear screen and reset for new points
         if is_key_pressed(KeyCode::C) {
             control_points.delete();
+            control_points_backup.delete();
             animation_started = false;
             animation_step = 0;
         }
 
         if is_key_pressed(KeyCode::Enter) && !animation_started {
-            if control_points.polygone.len() >= 1 {
+            if control_points.polygone.len() >= 2 {
+                control_points_backup = control_points.clone();
                 control_points.cut_corners();
                 animation_started = true;
                 animation_step = 0;
@@ -56,11 +59,15 @@ pub async fn run() {
                 }
                 last_step_time = now;
             }
-        } else {
-            // Draw circles at each point
+        }else {
             for point in &control_points.polygone {
                 draw_circle(point.x as f32, point.y as f32, 5.0, WHITE);
             }
+        }
+
+        // Draw control points
+        for point in &control_points_backup.polygone {
+            draw_circle(point.x as f32, point.y as f32, 5.0, WHITE);
         }
 
         // Draw: at step 0 show all control points; at step N always include first+last and all step=N points

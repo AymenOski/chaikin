@@ -5,6 +5,8 @@ use poly::{Point, Poly, Polygone};
 
 pub async fn run() {
     let mut control_points = Polygone::empty();
+    let mut animation_started = false;
+    let mut animation_step = 0;
 
     loop {
         clear_background(BLACK);
@@ -21,10 +23,11 @@ pub async fn run() {
 
         if is_key_pressed(KeyCode::Enter) {
             control_points.cut_corners();
+            animation_started = true;
         }
 
         // Detect mouse click and store point
-        if is_mouse_button_pressed(MouseButton::Left) {
+        if is_mouse_button_pressed(MouseButton::Left) && !animation_started {
             let (mx, my) = mouse_position();
             let control_point = Point::new(mx as f64, my as f64, Poly::P, 0);
 
@@ -32,6 +35,17 @@ pub async fn run() {
                 control_points = Polygone::new(control_point);
             } else {
                 control_points.append_point(control_point);
+            }
+        }
+
+        for r in &control_points.polygone {
+            if r.kind == Poly::R {
+                let r_step = r.step;
+                    for q in &control_points.polygone {
+                        if q.step == r_step && q.kind == Poly::Q {
+                            draw_line(q.x as f32, q.y as f32, r.x as f32, r.y as f32, 2.0, RED);
+                        }
+                    }
             }
         }
 

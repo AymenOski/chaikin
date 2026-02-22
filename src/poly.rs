@@ -14,6 +14,7 @@ pub struct Point {
     pub y: f64,
     pub kind: Poly,
     pub step: u8,
+    
 }
 
 impl Point {
@@ -33,7 +34,7 @@ impl Point {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Polygone {
     pub polygone: Vec<Point>,
     pub start: usize,
@@ -125,18 +126,29 @@ impl Polygone {
         for depth in 0..7 {
             let mut i = 0;
             while i < self.polygone.len() - 1 {
-                // Find all points created at THIS depth level
+                // cut only edges of the current depth aka not the already cut ones
                 if self.polygone[i].step != depth {
                     i += 1;
                     continue;
                 }
-                // Create Q and R by cutting edges starting from these points
-                let qx = Self::lerp(self.polygone[i].x, self.polygone[i + 1].x, 0.25);
-                let qy = Self::lerp(self.polygone[i].y, self.polygone[i + 1].y, 0.25);
+                // Find next point at the SAME depth (skip over old points from previous depths)
+                let mut next = i + 1;
+                while next < self.polygone.len() && self.polygone[next].step != depth {
+                    next += 1;
+                }
+                
+                // No valid next point at this depth, nothing to cut
+                if next >= self.polygone.len() {
+                    i += 1;
+                    continue;
+                }
+                
+                let qx = Self::lerp(self.polygone[i].x, self.polygone[next].x, 0.25);
+                let qy = Self::lerp(self.polygone[i].y, self.polygone[next].y, 0.25);
                 let q = Point::new(qx, qy, Poly::Q, depth+1);
 
-                let rx = Self::lerp(self.polygone[i].x, self.polygone[i + 1].x, 0.75);
-                let ry = Self::lerp(self.polygone[i].y, self.polygone[i + 1].y, 0.75);
+                let rx = Self::lerp(self.polygone[i].x, self.polygone[next].x, 0.75);
+                let ry = Self::lerp(self.polygone[i].y, self.polygone[next].y, 0.75);
                 let r = Point::new(rx, ry, Poly::R, depth+1);
 
                 self.insert_point(i + 1, r);

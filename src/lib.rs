@@ -9,7 +9,7 @@ pub async fn run() {
     let mut animation_started = false;
     let mut animation_step: u8 = 0;
     let mut last_step_time: f64 = 0.0;
-    let step_duration: f64 = 1.0;
+    let step_duration: f64 = 0.5;
 
     loop {
         clear_background(BLACK);
